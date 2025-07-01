@@ -23,21 +23,25 @@ variable "bastion_sg_description" {
 }
 
 variable "vpn_port" {
-  default = ["22","443","1194","943"]
+  default = [22,443,1194,943]
 }
 
 variable "mongodb_port" {
-  default = ["22","27017"]
+  default = [22,27017]
 }
 
 variable "redis_port" {
-  default = ["22","6379"]
+  default = [22,6379]
 }
 
 variable "mysql_port" {
-  default = ["22","3306"]
+  default = [22,3306]
 }
 
 variable "rabbitmq_port" {
-  default = ["22","5672"]
+  default = [22,5672]
+}
+
+variable "catalogue_sg_name" {
+  default = "catalogue"
 }

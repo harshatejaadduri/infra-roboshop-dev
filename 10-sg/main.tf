@@ -8,6 +8,17 @@ module "frontend_sg" {
   vpc_id = local.vpc_id
 }
 
+module "catalogue" {
+  source = "git::https://github.com/harshatejaadduri/terraform-sg.git?ref=main"
+  project = var.project
+  environment = var.environment
+
+  sg_name = var.catalogue_sg_name
+  sg_description = "for catalogue "
+  vpc_id = local.vpc_id
+}
+
+
 module "bastion_sg" {
   source = "git::https://github.com/harshatejaadduri/terraform-sg.git?ref=main"
   project = var.project
@@ -95,7 +106,7 @@ resource "aws_security_group_rule" "mongodb_sg_rules" {
   from_port         = var.mongodb_port[count.index]
   to_port           = var.mongodb_port[count.index]
   protocol          = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ]  #sourcing sg id to bastion sg id instead of giving ip address
+ source_security_group_id = module.vpn.sg_id
   security_group_id =  module.mongodb.sg_id 
 }
 
@@ -115,7 +126,7 @@ resource "aws_security_group_rule" "redis_sg_rules" {
   from_port         = var.redis_port[count.index]
   to_port           = var.redis_port[count.index]
   protocol          = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ]  
+  source_security_group_id = module.vpn.sg_id
   security_group_id =  module.redis.sg_id 
 }
 
@@ -135,7 +146,7 @@ resource "aws_security_group_rule" "mysql_sg_rules" {
   from_port         = var.mysql_port[count.index]
   to_port           = var.mysql_port[count.index]
   protocol          = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ] 
+  source_security_group_id = module.vpn.sg_id
   security_group_id =  module.mysql.sg_id 
 }
 
@@ -155,7 +166,52 @@ resource "aws_security_group_rule" "rabbitmq_sg_rules" {
   from_port         = var.rabbitmq_port[count.index]
   to_port           = var.rabbitmq_port[count.index]
   protocol          = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ]  
+  source_security_group_id = module.vpn.sg_id
   security_group_id =  module.rabbitmq.sg_id 
+}
+
+resource "aws_security_group_rule" "catalogue_alb_sg" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.alb.sg_id  #sourcing sg id to catalogue  
+  security_group_id =  module.catalogue.sg_id 
+}
+
+resource "aws_security_group_rule" "catalogue_vpn_sg" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id  #sourcing sg id to catalogue  
+  security_group_id =  module.catalogue.sg_id 
+}
+
+resource "aws_security_group_rule" "catalogue_vpn_http" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id  #sourcing sg id to catalogue  
+  security_group_id =  module.catalogue.sg_id 
+}
+
+resource "aws_security_group_rule" "catalogue_bastion_sg" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion_sg.sg_id  #sourcing sg id to catalogue  
+  security_group_id =  module.catalogue.sg_id 
+}
+
+resource "aws_security_group_rule" "catalogue_mongodb_sg" {
+  type              = "ingress"
+  from_port         = 27017
+  to_port           = 27017
+  protocol          = "tcp"
+  source_security_group_id = module.catalogue.sg_id  #sourcing sg id to catalogue  
+  security_group_id =   module.mongodb.sg_id
 }
 
