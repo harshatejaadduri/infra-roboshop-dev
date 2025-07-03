@@ -11,3 +11,11 @@ resource "aws_instance" "vpn" {
   }
   )
 }
+
+resource "aws_route53_record" "www" {
+  zone_id = var.zone_id
+  name    = "vpn.${var.domain_name}"
+  type    = "A"
+  ttl     = 1
+  records = [aws_instance.vpn.public_ip]
+}
