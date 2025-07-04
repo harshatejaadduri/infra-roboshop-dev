@@ -22,3 +22,10 @@ variable "bastion_sg_description" {
     default = "created sg for bastion instance"
 }
 
+variable "zone_id" {
+  default = "Z0488471JVN0WTD7CBXR"
+}
+
+variable "domain_name" {
+  default = "84dev.store"
+}

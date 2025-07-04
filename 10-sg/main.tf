@@ -181,7 +181,7 @@ resource "aws_security_group_rule" "catalogue_vpn_sg" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  source_security_group_id = module.vpn.sg_id  #sourcing sg id to catalogue  
+  source_security_group_id = module.vpn.sg_id  #sourcing vpn sg id to catalogue  
   security_group_id =  module.catalogue.sg_id 
 }
 

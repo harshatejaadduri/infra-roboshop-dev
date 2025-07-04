@@ -17,10 +17,6 @@ variable "type" {
   default = "ssh"
 }
 
-variable "zone_id" {
-  default = "Z0488471JVN0WTD7CBXR"
-}
-
-variable "domain_name" {
+variable "zone_name" {
   default = "84dev.store"
 }
