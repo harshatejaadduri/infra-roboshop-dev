@@ -2,4 +2,4 @@
 
 component=$1
 dnf install ansible -y
-ansible-pull -U https://github.com/harshatejaadduri/ansible-role-v1.git -e component=$1 -e env=$2 main.yaml
+ansible-pull -U https://github.com/harshatejaadduri/terraform-ansible-roles.git -e component=$1 -e env=$2 main.yaml
