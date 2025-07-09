@@ -5,6 +5,10 @@ resource "aws_instance" "bastion" {
   subnet_id = local.public_subnet_id
   iam_instance_profile = "TerrafromEc2Access"
   
+  root_block_device{
+    volume_size = 50
+    volume_type = "gp3"
+  }
   
   tags = merge( local.common_tags, {
     Name = "${var.project}-${var.environment}-bastion"
@@ -12,12 +16,24 @@ resource "aws_instance" "bastion" {
   )
 }
 
-resource "terraform_data" "mysql" {
+resource "terraform_data" "bastion" {
   triggers_replace = [
    aws_instance.bastion.id
   ]
-   provisioner "local-exec" {
-   command = "sudo dnf install ansible -y | git clone https://github.com/harshatejaadduri/infra-roboshop-dev.git" 
+   provisioner "file" {            
+    source      = "install.sh"
+    destination = "/tmp/install.sh"
   }
-  depends_on = [ aws_instance.bastion ]
+   connection {                   
+    type     = var.type
+    user     = var.user
+    password = var.password
+    host     = aws_instance.bastion.public_ip
+  }
+   provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/install.sh",
+      "sh /tmp/install.sh"
+    ]
+  }
 }
