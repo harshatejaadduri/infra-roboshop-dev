@@ -34,6 +34,7 @@ resource "aws_route53_record" "www" {
   zone_id = var.zone_id
   name    = "*.backend-dev.${var.domain_name}"
   type    = "A"
+  allow_overwrite = true
 
   alias { 
     name                   = module.alb.dns_name #alb zone name

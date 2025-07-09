@@ -7,12 +7,11 @@ terraform {
   }
   backend "s3" {
   bucket = "harsha84-remote-state"
-  key    = "alb"
+  key    = "frontend-alb"
   region = "us-east-1"
   #dynamodb_table = "harsha84-remote-state"
   encrypt = true
   use_lockfile = true
-  
 }
 }
 
